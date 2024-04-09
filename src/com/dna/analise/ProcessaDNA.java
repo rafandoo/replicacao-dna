@@ -2,56 +2,34 @@ package com.dna.analise;
 
 import com.dna.Dna;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProcessaDNA {
 
-    public void validar(Dna dna) {
-        dna.setValido(validarFita(dna));
-    }
+    private static final String DNA_REGEX = "^[ATGC]*$";
+    private int totalFitas;
+    private int validas;
+    private int invalidas;
+    private List<Integer> invalidasPorLinha = new ArrayList<>();
 
-    public void validar(List<Dna> dna) {
+    public void processar(List<Dna> dna) {
         for (Dna d : dna) {
-            d.setValido(validarFita(d));
+            this.totalFitas++;
+            if (!validarFita(d)) {
+                d.setValido(false);
+                this.invalidas++;
+                this.invalidasPorLinha.add(this.totalFitas);
+            }
+            gerarFitaComplementar(d);
         }
     }
 
     private boolean validarFita(Dna dna) {
-        int adenina = 0, timina = 0, guanina = 0, citosina = 0;
-
-        for (char nucleotidio : dna.getFita().toUpperCase().toCharArray()) {
-            switch (nucleotidio) {
-                case 'A':
-                    adenina++;
-                    break;
-                case 'T':
-                    timina++;
-                    break;
-                case 'G':
-                    guanina++;
-                    break;
-                case 'C':
-                    citosina++;
-                    break;
-                default:
-                    return false;
-            }
-        }
-//        return adenina == timina && guanina == citosina;
-        return true;
+        return dna.getFita().matches(DNA_REGEX);
     }
 
-    public void complementar(Dna dna) {
-        dna.setFitaComplementar(gerarFitaComplementar(dna));
-    }
-
-    public void complementar(List<Dna> dna) {
-        for (Dna d : dna) {
-            d.setFitaComplementar(gerarFitaComplementar(d));
-        }
-    }
-
-    private String gerarFitaComplementar(Dna dna) {
+    private void gerarFitaComplementar(Dna dna) {
         StringBuilder sb = new StringBuilder();
         for (char nucleotidio : dna.getFita().toUpperCase().toCharArray()) {
             switch (nucleotidio) {
@@ -67,8 +45,23 @@ public class ProcessaDNA {
                 case 'C':
                     sb.append('G');
                     break;
+                default:
+                    dna.setValido(false);
             }
         }
-        return sb.toString();
+        if (dna.isValido()) {
+            this.validas++;
+        }
+        dna.setFitaComplementar(sb.toString());
+    }
+
+    public void printMetricas(String arquivo) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Arquivo : %s\n", arquivo));
+        sb.append(String.format("o Total de fitas é : %d\n", this.totalFitas));
+        sb.append(String.format("o Total de validas é : %d\n", this.validas));
+        sb.append(String.format("o Total de invalidas é : %d\n", this.invalidas));
+        sb.append(String.format("as linhas com fitas invalidas são : %s\n\n", this.invalidasPorLinha));
+        System.out.println(sb);
     }
 }

@@ -10,7 +10,7 @@ public class Dna {
     public Dna(String fitaOriginal, String arquivoOriginal) {
         this.fitaOriginal = fitaOriginal;
         this.arquivoOriginal = arquivoOriginal;
-        this.valido = false;
+        this.valido = true;
     }
 
     public String getFita() {

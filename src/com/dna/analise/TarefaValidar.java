@@ -2,7 +2,6 @@ package com.dna.analise;
 
 import com.dna.Dna;
 import com.dna.ExportDna;
-import com.dna.analise.ProcessaDNA;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -37,8 +36,11 @@ public class TarefaValidar implements Runnable {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        pdna.complementar(this.dna);
-        pdna.validar(this.dna);
+        pdna.processar(this.dna);
+        StringBuilder sb = new StringBuilder();
+        sb.append("Arquivo: ").append(this.path).append("\n");
+
+        pdna.printMetricas(this.path);
         edna.export(this.dna);
     }
 }
